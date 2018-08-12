@@ -121,7 +121,7 @@ class Client {
   _initialize () {
     const bot = storage.bot
     if (this.configOverrides && this.configOverrides.setPresence === true) {
-      if (config.bot.activityType) bot.user.setActivity(config.bot.activityName, { type: config.bot.activityType, url: config.bot.streamActivityURL })
+      if (config.bot.activityType) bot.user.setActivity(config.bot.activityName, { type: config.bot.activityType, url: config.bot.streamActivityURL || undefined })
       else bot.user.setActivity(null)
       bot.user.setStatus(config.bot.status)
     }
@@ -155,7 +155,7 @@ class Client {
         case 'finishedInit':
           storage.initialized = 2
           dbOps.blacklists.refresh()
-          this._addVipSchedule()
+          dbOps.vips.refreshVipSchedule()
           break
         case 'cycleVIPs':
           if (bot.shard.id === message.shardId) dbOps.vips.refresh()
@@ -202,7 +202,7 @@ class Client {
   }
 
   stop () {
-    if (this.state === STATES.STARTING || this.state === STATES.STOPPED) return log.general.warning(`${this.SHARD_PREFIX}Ignoring stop command because it is in ${this.state} state`)
+    if (this.state === STATES.STARTING || this.state === STATES.STOPPED) return log.general.warning(`${this.SHARD_PREFIX}Ignoring stop command because of ${this.state} state`)
     storage.initialized = 0
     this.scheduleManager.stopSchedules()
     clearInterval(this._vipInterval)
@@ -212,7 +212,7 @@ class Client {
   }
 
   start (callback) {
-    if (this.state === STATES.STARTING || this.state === STATES.READY) return log.general.warning(`${this.SHARD_PREFIX}Ignoring start command because it is in ${this.state} state`)
+    if (this.state === STATES.STARTING || this.state === STATES.READY) return log.general.warning(`${this.SHARD_PREFIX}Ignoring start command because of ${this.state} state`)
     this.state = STATES.STARTING
     listeners.enableCommands()
     const uri = process.env.DRSS_DATABASE_URI || config.database.uri
@@ -227,7 +227,7 @@ class Client {
   }
 
   restart (callback) {
-    if (this.state === STATES.STARTING) return log.general.warning(`${this.SHARD_PREFIX}Ignoring restart command because it is in ${this.state} state`)
+    if (this.state === STATES.STARTING) return log.general.warning(`${this.SHARD_PREFIX}Ignoring restart command because of ${this.state} state`)
     if (this.state === STATES.READY) this.stop()
     this.start(callback)
   }
@@ -240,34 +240,10 @@ class Client {
     if (storage.bot.shard && storage.bot.shard.count > 0) dbOps.failedLinks.uniformize(storage.failedLinks, () => process.send({ _drss: true, type: 'initComplete', guilds: guildsInfo, missingGuilds: missingGuilds, linkDocs: linkDocs, shard: storage.bot.shard.id }))
     else if (config._vip) {
       this._vipInterval = setInterval(dbOps.vips.refresh, 600000)
-      this._addVipSchedule()
+      dbOps.vips.refreshVipSchedule()
     }
     listeners.createManagers(storage.bot)
     if (callback) callback()
-  }
-
-  _addVipSchedule () {
-    if (config._vip !== true) return
-    const vipLinks = []
-    for (var vipId in storage.vipServers) {
-      const benefactor = storage.vipServers[vipId].benefactor
-      if (benefactor.pledgedAmount < 500) continue
-      const guildRss = storage.currentGuilds.get(vipId)
-      if (!guildRss) continue
-      const rssList = guildRss.sources
-      if (!rssList) continue
-      for (var rssName in rssList) {
-        const link = rssList[rssName].link
-        if (link.includes('feed43.com')) continue
-        vipLinks.push(link)
-        storage.allScheduleWords.push(link)
-        delete storage.scheduleAssigned[rssName]
-      }
-    }
-    if (vipLinks.length > 0) {
-      const newSched = { name: 'vip', refreshTimeMinutes: config._vipRefreshTimeMinutes ? config._vipRefreshTimeMinutes : 10, keywords: vipLinks }
-      this.scheduleManager.addSchedule(newSched)
-    }
   }
 
   disableCommands () {
