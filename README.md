@@ -1,5 +1,7 @@
 # Discord.RSS
 This is a fork of the nice [Discord.RSS](https://github.com/synzen/Discord.RSS) bot. It's slightly modified for hosting on [Glitch](https://glitch.com)
+
+Also, the development branch was merged into the master to simplify the import of the latest version into Glitch.
 > Driven by the lack of comprehensive RSS bots available, I have decided to try my hand at creating one of my own. Designed with as much customization as possible for both users and bot hosters, while also (or should be) easy to understand.
 
 > *synzen* ©
@@ -24,15 +26,9 @@ Create a database at AWS US East, add a user to it and get its **MongoDB URI** o
 ## Install the bot
 [Remix this project on Glitch](https://glitch.com/edit/#!/remix/discord-rss)
 
-If you remix this project on Glitch, keep in mind that these files are not default:
-* `config.json`
-* `settings/commands.js`
-* `settings/schedules/feed43.json`
-* `settings/schedules/glitch.json`
+OR
 
-If you need the default files, get them from the GitHub repo: [Discord.RSS](https://github.com/Chilace/Discord.RSS)
-
-Or import the whole project from GitHub: [Import from GitHub into Glitch](https://glitch.com/edit/#!/import/github/Chilace/Discord.RSS?DRSS_BOT_TOKEN=&DRSS_DATABASE_URI=)
+[Import from GitHub into Glitch](https://glitch.com/edit/#!/import/github/Chilace/Discord.RSS?DRSS_BOT_TOKEN=&DRSS_DATABASE_URI=)
 
 **Warning !!! Do not allow secrets/credentials to be publicly available.**
 
@@ -90,4 +86,5 @@ A **bookmarklet** is a bookmark/favorite that has JavaScript code as its "URL". 
 
 Then configure the bot as stated in the original [WIKI](https://github.com/synzen/Discord.RSS/wiki)
 
-## You are all set!
+## You're all set!
+*GitHub source:* [https://github.com/Chilace/Discord.RSS](https://github.com/Chilace/Discord.RSS)
