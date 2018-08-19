@@ -13,9 +13,9 @@ module.exports = (data, callback) => {
 
   const cookies = (uniqueSettings && uniqueSettings.cookies) ? uniqueSettings.cookies : undefined
 
-  requestStream(link, cookies, feedparser, err => {
-    if (err) callback(err, { status: 'failed', link: link, rssList: rssList })
-  })
+  requestStream(link, cookies, feedparser)
+    .then(stream => stream.pipe(feedparser))
+    .catch(err => callback(err, { status: 'failed', link: link, rssList: rssList }))
 
   feedparser.on('error', err => {
     feedparser.removeAllListeners('end')
