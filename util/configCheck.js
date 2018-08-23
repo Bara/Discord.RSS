@@ -64,7 +64,8 @@ exports.defaultConfigs = {
     activityName: {type: String, default: ''},
     controllerIds: {type: Array, default: []},
     menuColor: {type: Number, default: 7833753},
-    deleteMenus: {type: Boolean, default: false}
+    deleteMenus: {type: Boolean, default: false},
+    exitOnSocketIssues: {type: Boolean, default: false}
   },
   database: {
     uri: {type: String, default: 'mongodb://localhost/rss'},
@@ -129,8 +130,8 @@ exports.check = userConfig => {
         else if (configName === 'menuColor' && userVal > 16777215) checkIfRequired(configCategory, configName, `Cannot be larger than 16777215`)
         else if (configName === 'sqlType' && (userVal !== 'sqlite3' && userVal !== 'mysql')) checkIfRequired(configCategory, configName, 'Must be either "mysql" or "sqlite3"')
         else if (configName === 'processorMethod' && userVal !== 'concurrent' && userVal !== 'concurrent-isolated' && userVal !== 'parallel-isolated') checkIfRequired(configCategory, configName, 'Must be either "concurrent", "concurrent-isolated", or "parallel-isolated"')
-        else if (configName === 'activityType' && !ACTIVITY_TYPES.includes(userVal.toUpperCase())) checkIfRequired(configCategory, configName, `Must be one of the following: "${ACTIVITY_TYPES.join('","')}"`)
-        else if (configName === 'status' && !STATUS_TYPES.includes(userVal.toLowerCase())) checkIfRequired(configCategory, configName, `Must be one of the following: "${STATUS_TYPES.join('","')}"`)
+        else if (configName === 'activityType' && !ACTIVITY_TYPES.includes(userVal)) checkIfRequired(configCategory, configName, `Must be one of the following: "${ACTIVITY_TYPES.join('","')}"`)
+        else if (configName === 'status' && !STATUS_TYPES.includes(userVal)) checkIfRequired(configCategory, configName, `Must be one of the following: "${STATUS_TYPES.join('","')}"`)
         else if (configName === 'controllerIds') {
           for (var i = 0; i < userVal.length; ++i) {
             if (userVal[i] === '') continue
